@@ -2,6 +2,8 @@ import Header from "../_components/header"
 import { format } from "date-fns"
 import { ptBR } from "date-fns/locale"
 import Seach from "./_components/search"
+import { BookAIcon } from "lucide-react"
+import BookingItem from "../_components/booking-item"
 
 export default function Home() {
   return <div>
@@ -18,6 +20,11 @@ export default function Home() {
 
     <div className="px-5 mt-6">
       <Seach/>
+      </div>
+
+      <div className="px-5 mt-6">
+        <h2 className="text-xs mb-3 uppercase text-gray-400 font-bold">Agendamentos</h2>
+        <BookingItem />
       </div>
   </div>
 }
