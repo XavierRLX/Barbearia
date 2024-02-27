@@ -2,10 +2,15 @@ import Header from "../_components/header"
 import { format } from "date-fns"
 import { ptBR } from "date-fns/locale"
 import Seach from "./_components/search"
-import { BookAIcon } from "lucide-react"
 import BookingItem from "../_components/booking-item"
+import { db } from "../_lib/prisma"
+import BarbershopItem from "./_components/barbershop-item"
 
-export default function Home() {
+export default async function Home() {
+
+  // chamar o prisma e pegar as barbearias
+  const barbershops = await db.barbershop.findMany({})
+
   return <div>
     <Header />
 
@@ -25,6 +30,15 @@ export default function Home() {
       <div className="px-5 mt-6">
         <h2 className="text-xs mb-3 uppercase text-gray-400 font-bold">Agendamentos</h2>
         <BookingItem />
+      </div>
+
+      <div className="px-5 mt-6">
+        <h2 className="px-5 mt-6  text-xs uppercase text-gray-400 font-bold"> Recomendados</h2>
+        <div className="flex gap-2 overflow-auto [&::-webkit-scrollbar]:hidden">
+          {barbershops.map((barbershop) => (
+            <BarbershopItem key={barbershop.id} barbershop = {barbershop} />
+          ))}
+        </div>
       </div>
   </div>
 }
