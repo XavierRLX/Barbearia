@@ -28,7 +28,7 @@ const BarbershopInfo = ({barbershop} : BarbeshopInfoProps) => {
             <Button onClick={handleBackClick} size="icon" variant="outline" className="z-50 absolute top-4 left-4" >
                 <ChevronLeftIcon/>
             </Button>
-            <Image src={barbershop.imageUrl} fill alt={barbershop.name} style={{ objectFit : "cover",}} className="opacity-75" />
+            <Image src={barbershop.imageUrl} fill alt={barbershop.name} style={{ objectFit : "cover"}} className="opacity-75" />
             <Button size="icon" variant="outline" className="z-50 absolute top-4 right-4" >
                 <MenuIcon/>
             </Button>
