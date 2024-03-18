@@ -13,6 +13,7 @@ interface BarbershopItemProps {
 }
 
 const BarbershopItem = ({ barbershop }: BarbershopItemProps) => {
+  
   const router = useRouter();
 
   const handleBookingClick = () => {
