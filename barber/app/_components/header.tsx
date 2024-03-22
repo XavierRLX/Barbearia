@@ -6,9 +6,12 @@ import { Button } from "./ui/button";
 import { signIn, signOut, useSession } from "next-auth/react"
 import { MenuIcon } from "lucide-react";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "./ui/sheet";
+import { Avatar, AvatarImage } from "@radix-ui/react-avatar";
 
 
 const Header = () => {
+
+    const {data, status} = useSession();
     return (
         <Card >
             <CardContent className="py-5 px-30 justify-between items-center flex flex-row">
@@ -19,9 +22,22 @@ const Header = () => {
                             <MenuIcon size={16}/>
                         </Button>
                     </SheetTrigger>
-                    <SheetContent>
+                    <SheetContent className="p-0">
                         <SheetHeader>
-                            <SheetTitle>Menu</SheetTitle>
+
+                            {data?.user? (
+                                <div className="flex items-center gap-3">
+                                    <Avatar>
+                                        <AvatarImage src={data.user?.image ?? "" }/>
+                                    </Avatar>
+
+                                    <h2 className="font-bold">{data.user.name}</h2>
+                                </div>
+                            ) : (
+                                <></>
+                            )} 
+
+                            <SheetTitle className="text-left border-b border-solid border-primary p-5">Menu</SheetTitle>
                         </SheetHeader>
                     </SheetContent>
                 </Sheet>
