@@ -3,12 +3,21 @@
 import Image from "next/image";
 import { Card, CardContent } from "./ui/card";
 import { Button } from "./ui/button";
-import { MenuIcon } from "lucide-react";
-import { singIn } from "next-auth/react"
+import { signIn, useSession } from "next-auth/react"
+import { Account, User } from "@prisma/client";
 
-const Header = () => {
+// interface HeaderProps {
+//     user : User
+// }
+
+
+const Header = (
+    //{user} : HeaderProps
+    ) => {
+
+    const {data} = useSession();
     const handleLoginClick = async () => {
-        await singIn();
+        await signIn();
     };
     return (
         <Card >
@@ -17,7 +26,11 @@ const Header = () => {
                 {/* <Button variant={"outline"} size={"icon"} className="h-8 w-8">
                     <MenuIcon/>
                 </Button> */}
+                {data?.user ? (
+                    <h1>{data.user.name}</h1>
+                ) : (
                 <Button onClick={handleLoginClick}>Login</Button>
+                )}
             </CardContent>
         </Card>
     );
