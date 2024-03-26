@@ -21,7 +21,7 @@ const BarbershopInfo = ({barbershop} : BarbeshopInfoProps) => {
     const router = useRouter();
 
     const handleBackClick = () => {
-        router.back();
+        router.replace("/");
     };
 
     return ( 
@@ -42,7 +42,7 @@ const BarbershopInfo = ({barbershop} : BarbeshopInfoProps) => {
             </SheetContent>
           </Sheet>
         </div>
-
+ 
         <div className="px-5 pt-3 pb-6 border-b border-solid border-secondary">
             <h1 className="text-xl font-bold">{barbershop.name}</h1>
             <div className="flex items-center gap-1 mt-2">
