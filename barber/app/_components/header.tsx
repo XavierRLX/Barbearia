@@ -4,9 +4,10 @@ import Image from "next/image";
 import { Card, CardContent } from "./ui/card";
 import { Button } from "./ui/button";
 import { signIn, signOut, useSession } from "next-auth/react"
-import { LogInIcon, LogOut, LogOutIcon, MenuIcon, UserIcon } from "lucide-react";
+import { HomeIcon, LogInIcon, LogOut, LogOutIcon, MenuIcon, UserIcon, CalendarIcon } from "lucide-react";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "./ui/sheet";
 import { Avatar, AvatarImage } from "@radix-ui/react-avatar";
+import Link from "next/dist/client/link";
 
 
 const Header = () => {
@@ -14,7 +15,7 @@ const Header = () => {
     const {data, status} = useSession();
 
     const handleLogoutClick = () => signOut();
-    const handlesingInClick = () => signIn();
+    const handlesingInClick = () => signIn("google");
 
     return (
         <Card >
@@ -54,6 +55,24 @@ const Header = () => {
                                         Login</Button>
                                 </div>
                             )} 
+
+                            <div className="flex flex-col gap-3 px-5">
+                                <Button variant="outline" className="justify-start" asChild>
+                                    <Link href="/">
+                                        <HomeIcon className="mr-2" size="18"/>
+                                        Inicio
+                                    </Link>
+                                    </Button>
+
+                                {data?.user && (
+                                    <Button variant="outline" className="justify-start" asChild>
+                                    <Link href="/Bookings">
+                                        <CalendarIcon className="mr-2" size="18"/>
+                                        Agendamentos
+                                    </Link>
+                                </Button>
+                                )}
+                            </div>
                     </SheetContent>
                 </Sheet>
             </CardContent>
