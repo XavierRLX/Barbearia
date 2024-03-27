@@ -1,10 +1,15 @@
 "use client"
 import { Button } from "@/app/_components/ui/button";
+import { Calendar } from "@/app/_components/ui/calendar";
 import { Card, CardContent } from "@/app/_components/ui/card";
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/app/_components/ui/sheet";
 import { Service } from "@prisma/client" ;
+import { ptBR } from "date-fns/locale";
 import { signIn } from "next-auth/react";
+import { Underdog } from "next/font/google";
 import Image from "next/image";
 import { useRouter } from "next/router";
+import React from "react";
 
 interface ServiceItemProps {
     service:Service
@@ -13,6 +18,8 @@ interface ServiceItemProps {
 
 
 const ServiceItem = ({service, isAuthenticated} : ServiceItemProps) => {
+
+    const [date, setDate] = React.useState<Date | undefined> (new Date())
 
     const handleBookingClick = () => {
         if (!isAuthenticated)
@@ -37,7 +44,39 @@ const ServiceItem = ({service, isAuthenticated} : ServiceItemProps) => {
                                     currency: "BRL",
                                 }).format(Number(service.price))}
                             </p>
-                            <Button onClick={handleBookingClick} variant="secondary">Reservar</Button>
+                            <Sheet>
+                                <SheetTrigger asChild>
+                                    <Button onClick={handleBookingClick} variant="secondary">Reservar</Button>
+                                </SheetTrigger>
+                                <SheetContent className="p-0">
+                                    <SheetHeader className="text-alert px-5 py-6 border-b border-solid border-secondary">
+                                        <SheetTitle>Fazer Reserva</SheetTitle>
+                                    </SheetHeader>
+                                    <Calendar locale={ptBR} fromDate={new(Date)} mode="single" selected={date} onSelect={setDate} className="mt-6"
+                                    styles={{
+                                        head_cell: {
+                                            width:"100%",
+                                            textTransform: "capitalize",
+                                        },
+                                        cell:{
+                                            width:"100%",
+                                        },
+                                        button:{
+                                            width: "100%",
+                                        },
+                                        nav_button_previous:{
+                                            width: "32px",
+                                        },
+                                        nav_button_next:{
+                                            width: "32px",
+                                        },
+                                        caption:{
+                                            textTransform: "capitalize",
+                                        },
+                                    }}
+                                    />
+                                </SheetContent>
+                            </Sheet>
                         </div>
                     </div>
                 </div>
