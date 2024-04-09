@@ -12,7 +12,7 @@ import { useEffect, useMemo, useState } from "react";
 import { generateDayTimeList } from "../_helpers/hours";
 import { addDays, format, setHours, setMinutes } from "date-fns";
 //import { saveBooking } from "../_actions/save-booking";
-import { Loader2 } from "lucide-react";
+import { Currency, Loader2 } from "lucide-react";
 //import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 //import { getDayBookings } from "../_actions/get-day-bookings";
@@ -25,28 +25,9 @@ interface ServiceItemProps {
 }
 
 const ServiceItem = ({ service, barbershop, isAuthenticated }: ServiceItemProps) => {
-  const router = useRouter();
-
-  const { data } = useSession();
 
   const [date, setDate] = useState<Date | undefined>(undefined);
   const [hour, setHour] = useState<string | undefined>();
-  const [submitIsLoading, setSubmitIsLoading] = useState(false);
-  const [sheetIsOpen, setSheetIsOpen] = useState(false);
-  const [dayBookings, setDayBookings] = useState<Booking[]>([]);
-
-//   useEffect(() => {
-//     if (!date) {
-//       return;
-//     }
-
-//     const refreshAvailableHours = async () => {
-//       const _dayBookings = await getDayBookings(barbershop.id, date);
-//       setDayBookings(_dayBookings);
-//     };
-
-//     refreshAvailableHours();
-//   }, [date, barbershop.id]);
 
   const handleDateClick = (date: Date | undefined) => {
     setDate(date);
@@ -63,69 +44,10 @@ const ServiceItem = ({ service, barbershop, isAuthenticated }: ServiceItemProps)
     }
   };
 
-  const handleBookingSubmit = async () => {
-    setSubmitIsLoading(true);
-
-    // try {
-    //   if (!hour || !date || !data?.user) {
-    //     return;
-    //   }
-
-    //   const dateHour = Number(hour.split(":")[0]);
-    //   const dateMinutes = Number(hour.split(":")[1]);
-
-    //   const newDate = setMinutes(setHours(date, dateHour), dateMinutes);
-
-    //   await saveBooking({
-    //     serviceId: service.id,
-    //     barbershopId: barbershop.id,
-    //     date: newDate,
-    //     userId: (data.user as any).id,
-      //});
-
-      setSheetIsOpen(false);
-      setHour(undefined);
-      setDate(undefined);
-      //toast("Reserva realizada com sucesso!", {
-//         description: format(newDate, "'Para' dd 'de' MMMM 'às' HH':'mm'.'", {
-//           locale: ptBR,
-//         }),
-//         action: {
-//           label: "Visualizar",
-//           onClick: () => router.push("/bookings"),
-//         },
-//       });
-//     } catch (error) {
-//       console.error(error);
-//     } finally {
-//       setSubmitIsLoading(false);
-//     }
- };
-
   const timeList = useMemo(() => {
-    if (!date) {
-      return [];
-    }
-
-    return generateDayTimeList(date).filter((time) => {
-      const timeHour = Number(time.split(":")[0]);
-      const timeMinutes = Number(time.split(":")[1]);
-
-      const booking = dayBookings.find((booking) => {
-        const bookingHour = booking.date.getHours();
-        const bookingMinutes = booking.date.getMinutes();
-
-        return bookingHour === timeHour && bookingMinutes === timeMinutes;
-      });
-
-      if (!booking) {
-        return true;
-      }
-
-      return false;
-    });
-  }, [date, dayBookings]);
-
+    return date ? generateDayTimeList(date) : [];
+  }, [date])
+  
   return (
     <Card>
       <CardContent className="p-3 w-full">
@@ -151,7 +73,7 @@ const ServiceItem = ({ service, barbershop, isAuthenticated }: ServiceItemProps)
                   currency: "BRL",
                 }).format(Number(service.price))}
               </p>
-              <Sheet open={sheetIsOpen} onOpenChange={setSheetIsOpen}>
+              <Sheet>
                 <SheetTrigger asChild>
                   <Button variant="secondary" onClick={handleBookingClick}>
                     Reservar
@@ -213,24 +135,40 @@ const ServiceItem = ({ service, barbershop, isAuthenticated }: ServiceItemProps)
                   )}
 
                   <div className="py-6 px-5 border-t border-solid border-secondary">
-                    {/* <BookingInfo
-                      booking={{
-                        barbershop: barbershop,
-                        date:
-                          date && hour
-                            ? setMinutes(setHours(date, Number(hour.split(":")[0])), Number(hour.split(":")[1]))
-                            : undefined,
-                        service: service,
-                      }}
-                    /> */}
+                    <Card>
+                      <CardContent className="p-3">
+                        <div className="flex justify-between">
+                          <h2 className="font-bold">{service.name}</h2>
+                          <h3 className="font-bold text-sm">
+                            {""}
+                            {Intl.NumberFormat("pt_BR", {
+                              style: "currency",
+                              currency: "BRL",
+                            }).format(Number(service.price))
+                            }
+                            </h3>
+                        </div>
+                      </CardContent>
+                    </Card>
                   </div>
 
-                  <SheetFooter className="px-5">
-                    <Button onClick={handleBookingSubmit} disabled={!hour || !date || submitIsLoading}>
-                      {submitIsLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                      Confirmar reserva
-                    </Button>
-                  </SheetFooter>
+                  {date && (
+                    <div className="flex justify-between">
+                      <h3 className="text-gray-400 text-sm">Date</h3>
+                      <h4 className="text-sm">
+                        {format(date,"dd 'de' MMMM" , {
+                        locale: ptBR,
+                        })}
+                      </h4>
+                    </div>
+                  )}
+
+                  {date && (
+                    <div className="flex justify-between">
+                      <h3 className="text-gray-400 text-sm"></h3>
+                      <h4 className="text-sm">{barbershop.name}</h4>
+                    </div>
+                  )}
                 </SheetContent>
               </Sheet>
             </div>
