@@ -3,14 +3,7 @@
 import { Button } from "@/app/_components/ui/button";
 import { Calendar } from "@/app/_components/ui/calendar";
 import { Card, CardContent } from "@/app/_components/ui/card";
-import {
-  Sheet,
-  SheetContent,
-  SheetFooter,
-  SheetHeader,
-  SheetTitle,
-  SheetTrigger,
-} from "@/app/_components/ui/sheet";
+import { Sheet,SheetContent,SheetFooter,SheetHeader,SheetTitle, SheetTrigger, } from "@/app/_components/ui/sheet";
 import { Barbershop, Booking, Service } from "@prisma/client";
 import { ptBR } from "date-fns/locale";
 import { signIn, useSession } from "next-auth/react";
@@ -22,6 +15,7 @@ import { addDays, format, setHours, setMinutes } from "date-fns";
 import { Currency, Loader2 } from "lucide-react";
 //import { toast } from "sonner";
 import { useRouter } from "next/navigation";
+import { saveBooking } from "../_helpers/_actions/save-booking";
 //import { getDayBookings } from "../_actions/get-day-bookings";
 //import BookingInfo from "@/app/_components/booking-info";
 
@@ -31,13 +25,11 @@ interface ServiceItemProps {
   isAuthenticated: boolean;
 }
 
-const ServiceItem = ({
-  service,
-  barbershop,
-  isAuthenticated,
-}: ServiceItemProps) => {
+const ServiceItem = ({ service, barbershop, isAuthenticated }: ServiceItemProps) => {
+  const { data } = useSession();
   const [date, setDate] = useState<Date | undefined>(undefined);
   const [hour, setHour] = useState<string | undefined>();
+  const [submitIsLoading, setSubmitLoading] = useState(false);
 
   const handleDateClick = (date: Date | undefined) => {
     setDate(date);
@@ -53,6 +45,34 @@ const ServiceItem = ({
       return signIn("google");
     }
   };
+
+  const handleBookingSubmit = async () => {
+    setSubmitLoading(true);
+
+    try {
+      if (!hour || !date || data?.user) {
+        return;
+      }
+
+      const dateHour = Number(hour.split(":")[0]);
+      const dateMinutes = Number(hour.split(":")[1]);
+
+      const newDate = setMinutes(setHours(date, dateHour), dateMinutes);
+
+      await saveBooking({
+        serviceId: service.id,
+        barbershopId: barbershop.id,
+        date: newDate,
+        userId: (data?.user as any).id,
+      });
+
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setSubmitLoading(false);
+    }
+  };
+
 
   const timeList = useMemo(() => {
     return date ? generateDayTimeList(date) : [];
@@ -176,17 +196,17 @@ const ServiceItem = ({
                           </div>
                         )}
 
-                        <div className="flex justify-between">
+                        {/* <div className="flex justify-between">
                           <h3 className="text-gray-400 text-sm">Barbearia</h3>
-                          <h4 className="text-sm">{barbershop.name}</h4>
-                        </div>
+                          <h4 className="text-sm">{service.name}</h4>
+                        </div> */}
                       </CardContent>
                     </Card>
                   </div>
                   <SheetFooter className="px-5">
-                    <Button disabled={!hour || !date}>
-                     
-                      Confirmar reserva
+                    <Button onClick={handleBookingSubmit} disabled={!hour || !date || submitIsLoading}> 
+                    {submitIsLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin"/>}
+                    Confirmar reserva
                     </Button>
                   </SheetFooter>
                 </SheetContent>
